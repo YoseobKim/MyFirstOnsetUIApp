@@ -13,17 +13,25 @@ export default class Page1 extends React.Component {
   renderToolbar() {
     return (
       <Toolbar>
-        <div className='center'>Onsen UI</div>
+        <div className='center'>5 Mins Plank</div>
       </Toolbar>
     );
   }
 
   render() {
+    var imgStyle = {
+      width: '100%'
+    };
+    var pCenter = {
+      textAlign: 'center'
+    };
+
     return (
       <Page renderToolbar={this.renderToolbar}>
-        <h3>My First OnsenUI Hybrid App</h3>
-        <div>Page1</div>
-        <Button onClick={this.pushPage.bind(this)}>Click Me!</Button>
+        <img style={imgStyle} src="img/maxresdefault.jpg" />
+        <p style={pCenter}>
+          <Button modifier='large' onClick={this.pushPage.bind(this)}>LET&apos;S DO THIS!!</Button>
+        </p>
       </Page>
     );
   }
