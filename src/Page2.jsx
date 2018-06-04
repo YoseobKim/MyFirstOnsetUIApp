@@ -39,7 +39,11 @@ export default class Page2 extends React.Component {
   }
 
   alertPopup() {
-    notification.alert('DONE!!! GO to the Next Step!');
+    navigator.vibrate([1000]);
+    notification.alert('DONE!!! GO to the Next Step!').then((response) => {
+    // Handle response.
+      console.log('DONE clicked!');
+    });
   }
 
   goBack() {
