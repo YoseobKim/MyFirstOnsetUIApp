@@ -1,19 +1,41 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Page, Button, Toolbar, BackButton, ProgressBar, Icon} from 'react-onsenui';
+import {Page, Button, Toolbar, BackButton, ProgressBar, Icon, Carousel, CarouselItem} from 'react-onsenui';
 import {notification} from 'onsenui';
+
+var counter = 0;
 
 export default class Page2 extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      counter: 0,
-      time: {}, 
-      seconds: 61,
+      time: {
+        "h" : 0,
+        "m" : 0,
+        "s" : 0
+      }, 
+      seconds: 0,
       progress: 0,
-      entire: 61
+      entire: 61,
+      counter: 0,
+      timerStarted: false
     };
     this.timer = 0;
+  }
+  
+  getInitialState() {
+    return {
+      time: {
+        "h" : 0,
+        "m" : 0,
+        "s" : 0
+      }, 
+      seconds: 0,
+      progress: 0,
+      entire: 61,
+      counter: 0,
+      timerStarted: false
+    };
   }
 
   alertPopup() {
@@ -24,23 +46,45 @@ export default class Page2 extends React.Component {
     this.stopTimer();
 
     this.setState({
-      counter: this.state.counter - 1,
-      time: 0,
+      time: {
+        "h" : 0,
+        "m" : 0,
+        "s" : 0
+      },
       seconds: 0,
-      progress: 0
+      progress: 0,
+      counter: this.state.counter - 1
     });
   }
 
   goNext() {
     this.stopTimer();
+
     this.setState({
-      counter: this.state.counter + 1,
-      time: 0,
+      time: {
+        "h" : 0,
+        "m" : 0,
+        "s" : 0
+      }, 
       seconds: 0,
-      progress: 0
+      progress: 0,
+      counter: this.state.counter + 1
     });
   }
 
+  setIndex(index) {
+    this.stopTimer();
+    this.setState({
+      time: {
+        "h" : 0,
+        "m" : 0,
+        "s" : 0
+      }, 
+      seconds: 0,
+      progress: 0,
+      counter: index
+    });
+  }
 
   secondsToTime(secs){
     let hours = Math.floor(secs / (60 * 60));
@@ -68,6 +112,7 @@ export default class Page2 extends React.Component {
     this.setSeconds(this.state.counter);
     if (this.timer == 0) {
       this.timer = setInterval(this.countDown.bind(this), 1000);
+      this.setState({timerStarted: true});
     }
   }
 
@@ -89,8 +134,11 @@ export default class Page2 extends React.Component {
   }
 
   stopTimer() {
-    clearInterval(this.timer);
-    this.timer = 0;
+    if(this.timer != 0) {
+      clearInterval(this.timer);
+      this.timer = 0;
+      this.setState({timerStarted: false});
+    }
   }
 
   renderToolbar() {
@@ -138,15 +186,6 @@ export default class Page2 extends React.Component {
                     'img/5.png',
                     'img/6.png'];
 
-    var backButton = this.state.counter > 0 ? 
-      <Button modifier='quiet' onClick={this.goBack.bind(this)}>Go Back!</Button> : 
-      <Button modifier='quiet' disabled='true' onClick={this.goBack.bind(this)}>Go Back!</Button>;
-    var nextButton = this.state.counter < 7 ?
-      <Button modifier='quiet' onClick={this.goNext.bind(this)}>Go Next!</Button> : 
-      <Button modifier='quiet' disabled='true' onClick={this.goNext.bind(this)}>Go Next!</Button>;
-    var startTimer = <Button onClick={this.startTimer.bind(this)}><Icon icon='md-play' /></Button>;
-    var stopTimer = <Button onClick={this.stopTimer.bind(this)}><Icon icon='md-stop' /></Button>;
-
     var imgStyle = {
       width: '100%'
     };
@@ -155,15 +194,70 @@ export default class Page2 extends React.Component {
       textAlign: 'center'
     };
 
+    var buttonStyle = {
+      width: '40px'
+    };
+
+    var iconSize = {
+      default: 30,
+      material: 28
+    };
+
+    var backButton = this.state.counter > 0 ? 
+      <Button modifier='quiet' onClick={this.goBack.bind(this)} style={buttonStyle}><Icon icon='md-chevron-left' size={iconSize} /></Button> : 
+      <Button modifier='quiet' disabled='true' onClick={this.goBack.bind(this)} style={buttonStyle}><Icon icon='md-chevron-left' size={iconSize} /></Button>;
+    var nextButton = this.state.counter < 7 ?
+      <Button modifier='quiet' onClick={this.goNext.bind(this)} style={buttonStyle}><Icon icon='md-chevron-right' size={iconSize} /></Button> : 
+      <Button modifier='quiet' disabled='true' onClick={this.goNext.bind(this)} style={buttonStyle}><Icon icon='md-chevron-right' size={iconSize} /></Button>;
+    var startStopButton = this.state.timerStarted == false ? 
+     (<Button modifier='large' onClick={this.startTimer.bind(this)}>Play <Icon icon='md-play' /></Button>) : 
+     (<Button modifier='large' onClick={this.stopTimer.bind(this)}>Stop <Icon icon='md-stop' /></Button>);
+    var timerText = this.state.timerStarted == true ?  
+      <p style={pCenter}><b style={{color: 'red'}}>{this.state.time.s} Secs Left!</b></p> :
+      <p style={pCenter}><b style={{color: 'red'}}>Press Play button</b></p>;
+    var carouselCursor = (<div style={{
+          textAlign: 'center',
+          fontSize: '20px',
+          position: 'absolute',
+          left: '0px',
+          right: '0px',
+        }}>
+          {programs.map((item, index) => (
+            <span key={index} style={{cursor: 'pointer'}} onClick={this.setIndex.bind(this, index)}>
+              {this.state.counter === index ? '\u25CF' : '\u25CB'}
+            </span>
+          ))}
+        </div>);
+
     return (
       <Page renderToolbar={this.renderToolbar.bind(this)}>
-        <h3>Current Program : {programs[this.state.counter]}</h3>
         <img style={imgStyle} src='img/title.JPG'/>
-        <img style={imgStyle} src={images[this.state.counter]}/>
-        <ProgressBar value={this.state.progress} />
-        <p style={pCenter}><b style={{color: 'red'}}>{this.state.time.s} Secs Left!</b></p>
-        <p style={pCenter}>{startTimer} | {stopTimer}</p>
-        <p style={pCenter}>{backButton} | {nextButton}</p>
+        <Carousel index={this.state.counter} autoScroll overscrollable>
+          {programs.map((item, index) => (
+            <CarouselItem key={index}>
+              <div style={{textAlign: 'center'}}>
+                <h3>{programs[index]}</h3>
+                <div style={{
+                  position: 'absolute',
+                  left: '10px',
+                  bottom: '45%'}}>
+                {backButton}
+                </div>
+                <img style={imgStyle} src={images[index]}/>
+                <div style={{
+                  position: 'absolute',
+                  right: '10px',
+                  bottom: '45%'}}>
+                {nextButton}
+                </div>
+                <ProgressBar value={this.state.progress} />
+                {timerText}
+                {startStopButton}
+              </div>
+            </CarouselItem>
+          ))}
+        </Carousel>
+        {carouselCursor}
       </Page>
     );
   }
