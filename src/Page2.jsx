@@ -38,11 +38,18 @@ export default class Page2 extends React.Component {
     };
   }
 
-  alertPopup() {
+  vibratePhone() {
+    console.log("vibrate");
     navigator.vibrate([1000]);
+  }
+
+  alertPopup() {
+
+    var vibrate = setInterval(this.vibratePhone.bind(this), 1000);
     notification.alert('DONE!!! GO to the Next Step!').then((response) => {
     // Handle response.
       console.log('DONE clicked!');
+      clearInterval(vibrate);
     });
   }
 
