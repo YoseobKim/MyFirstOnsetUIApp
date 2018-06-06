@@ -39,16 +39,14 @@ export default class Page2 extends React.Component {
   }
 
   vibratePhone() {
-    console.log("vibrate");
     navigator.vibrate([1000]);
   }
 
   alertPopup() {
-
     var vibrate = setInterval(this.vibratePhone.bind(this), 1000);
     notification.alert('DONE!!! GO to the Next Step!').then((response) => {
     // Handle response.
-      console.log('DONE clicked!');
+      this.goNext();
       clearInterval(vibrate);
     });
   }
@@ -161,6 +159,10 @@ export default class Page2 extends React.Component {
     );
   }
 
+  handleChange(e) {
+    this.setIndex(e.activeIndex);
+  }
+
   setSeconds(index) {
     switch(index) {
       case 0 :
@@ -213,6 +215,11 @@ export default class Page2 extends React.Component {
       default: 30,
       material: 28
     };
+    
+    var boldStyle = {
+      color: 'red',
+      fontSize: '20px'
+    };
 
     var backButton = this.state.counter > 0 ? 
       <Button modifier='quiet' onClick={this.goBack.bind(this)} style={buttonStyle}><Icon icon='md-chevron-left' size={iconSize} /></Button> : 
@@ -224,8 +231,8 @@ export default class Page2 extends React.Component {
      (<Button modifier='large' onClick={this.startTimer.bind(this)}>Play <Icon icon='md-play' /></Button>) : 
      (<Button modifier='large' onClick={this.stopTimer.bind(this)}>Stop <Icon icon='md-stop' /></Button>);
     var timerText = this.state.timerStarted == true ?  
-      <p style={pCenter}><b style={{color: 'red'}}>{this.state.time.s} Secs Left!</b></p> :
-      <p style={pCenter}><b style={{color: 'red'}}>Press Play button</b></p>;
+      <p style={pCenter}><b style={boldStyle}>{this.state.time.s} Secs Left!</b></p> :
+      <p style={pCenter}><b style={boldStyle}>Press Play button</b></p>;
     var carouselCursor = (<div style={{
           textAlign: 'center',
           fontSize: '20px',
@@ -243,7 +250,7 @@ export default class Page2 extends React.Component {
     return (
       <Page renderToolbar={this.renderToolbar.bind(this)}>
         <img style={imgStyle} src='img/title.JPG'/>
-        <Carousel index={this.state.counter} autoScroll overscrollable>
+        <Carousel onPostChange={this.handleChange.bind(this)} index={this.state.counter} swipeable autoScroll overscrollable>
           {programs.map((item, index) => (
             <CarouselItem key={index}>
               <div style={{textAlign: 'center'}}>
