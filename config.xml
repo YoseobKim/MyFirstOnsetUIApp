@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget xmlns="http://www.w3.org/ns/widgets" id="com.example.helloworld" version="1.0.0">
-  <name>helloworld</name>
+<widget xmlns="http://www.w3.org/ns/widgets" id="com.yoseob.kim.plankapp" version="1.0.0">
+  <name>plankapp</name>
   <description/>
   <author/>
   <access origin="*"/>
