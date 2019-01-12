@@ -21,6 +21,7 @@ export default class Page2 extends React.Component {
       timerStarted: false
     };
     this.timer = 0;
+    this.data = JSON.parse(localStorage.getItem("courseItem"));
   }
   
   getInitialState() {
@@ -68,6 +69,8 @@ export default class Page2 extends React.Component {
 
   goNext() {
     this.stopTimer();
+    let nextCount = this.state.counter + 1;
+    if(nextCount > this.data.program.length - 1) nextCount = this.data.program.length - 1;
 
     this.setState({
       time: {
@@ -77,7 +80,7 @@ export default class Page2 extends React.Component {
       }, 
       seconds: 0,
       progress: 0,
-      counter: this.state.counter + 1
+      counter: nextCount
     });
   }
 
@@ -154,7 +157,7 @@ export default class Page2 extends React.Component {
     return (
       <Toolbar>
         <BackButton className='left'></BackButton>
-        <div className='center'>5 Mins Plank</div>
+        <div className='center'>{this.data.title}</div>
       </Toolbar>
     );
   }
@@ -164,69 +167,43 @@ export default class Page2 extends React.Component {
   }
 
   setSeconds(index) {
-    switch(index) {
-      case 0 :
-      case 7 :
-        this.setState({
-          seconds: 61,
-          entire: 61
-        });
-      return;
-      default :
-        this.setState({
-          seconds: 31,
-          entire: 31
-        });
-        return;
-    }
+    let time = Number(this.data.program[index].time) + 1;
+    this.setState({
+      seconds: time,
+      entire: time
+    });
   }
 
   render() {
-    const programs = ['Basic Plank (1 min)', 
-                      'Elbow Plank (30 secs)',
-                      'Left leg raised Plank (30 secs)',
-                      'Right leg raised Plank (30 secs)',
-                      'Left side Plank (30 secs)',
-                      'Right side Plank (30 secs)',
-                      'Basic Plank (30 secs)',
-                      'Elbow Plank (1 min)'];
-    const images = ['img/1.png',
-                    'img/2.png',
-                    'img/3.png',
-                    'img/3.png',
-                    'img/4.png',
-                    'img/4.png',
-                    'img/5.png',
-                    'img/6.png'];
-
-    var imgStyle = {
+    let programs = this.data.program;
+    const imgStyle = {
       width: '100%'
     };
 
-    var pCenter = {
+    const pCenter = {
       textAlign: 'center'
     };
 
-    var buttonStyle = {
+    const buttonStyle = {
       width: '40px'
     };
 
-    var iconSize = {
+    const iconSize = {
       default: 30,
       material: 28
     };
     
-    var boldStyle = {
+    const boldStyle = {
       color: 'red',
       fontSize: '20px'
     };
 
     var backButton = this.state.counter > 0 ? 
       <Button modifier='quiet' onClick={this.goBack.bind(this)} style={buttonStyle}><Icon icon='md-chevron-left' size={iconSize} /></Button> : 
-      <Button modifier='quiet' disabled='true' onClick={this.goBack.bind(this)} style={buttonStyle}><Icon icon='md-chevron-left' size={iconSize} /></Button>;
+      <Button modifier='quiet' disabled={true} onClick={this.goBack.bind(this)} style={buttonStyle}><Icon icon='md-chevron-left' size={iconSize} /></Button>;
     var nextButton = this.state.counter < 7 ?
       <Button modifier='quiet' onClick={this.goNext.bind(this)} style={buttonStyle}><Icon icon='md-chevron-right' size={iconSize} /></Button> : 
-      <Button modifier='quiet' disabled='true' onClick={this.goNext.bind(this)} style={buttonStyle}><Icon icon='md-chevron-right' size={iconSize} /></Button>;
+      <Button modifier='quiet' disabled={true} onClick={this.goNext.bind(this)} style={buttonStyle}><Icon icon='md-chevron-right' size={iconSize} /></Button>;
     var startStopButton = this.state.timerStarted == false ? 
      (<Button modifier='large' onClick={this.startTimer.bind(this)}>Play <Icon icon='md-play' /></Button>) : 
      (<Button modifier='large' onClick={this.stopTimer.bind(this)}>Stop <Icon icon='md-stop' /></Button>);
@@ -249,19 +226,19 @@ export default class Page2 extends React.Component {
 
     return (
       <Page renderToolbar={this.renderToolbar.bind(this)}>
-        <img style={imgStyle} src='img/title.JPG'/>
+        <img style={imgStyle} src={this.data.titleimg}/>
         <Carousel onPostChange={this.handleChange.bind(this)} index={this.state.counter} swipeable autoScroll overscrollable>
           {programs.map((item, index) => (
             <CarouselItem key={index}>
               <div style={{textAlign: 'center'}}>
-                <h3>{programs[index]}</h3>
+                <h3>{programs[index].name}</h3>
                 <div style={{
                   position: 'absolute',
                   left: '10px',
                   bottom: '45%'}}>
                 {backButton}
                 </div>
-                <img style={imgStyle} src={images[index]}/>
+                <img style={imgStyle} src={programs[index].img}/>
                 <div style={{
                   position: 'absolute',
                   right: '10px',
