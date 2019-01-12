@@ -1,31 +1,63 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
 version: 2
 jobs:
   build:
-    working_directory: ~/working_directory
     docker:
+      # specify the version you desire here
       - image: circleci/node:8-browsers
-        env:
-          - DISPLAY=:99
-          - CHROME_BIN=/usr/bin/google-chrome
+      
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/mongo:3.4.4
+
+    working_directory: ~/repo
+
     steps:
       - checkout
-      - run:
-          name: Print system information
-          command: |
-            echo "node $(node -v)"
-            echo "npm v$(npm --version)"
-            echo "Yarn v$(yarn --version)"
-            echo "$(google-chrome --version)"
-      - run:
-          name: Install coveralls and gulp globally
-          command: sudo yarn global add coveralls gulp
 
-      - deploy:
-          name: Deployment
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      
+      - run: 
+          name: Install monaca
+          command: sudo npm install -g monaca # install monaca
+      - run: 
+          name: Install Onsen UI
+          command: npm install onsenui --save # install onsen ui
+      - run: 
+          name: Install node modules
+          command: npm install # install npm packages
+      - run:
+          name: Update Monaca
+          command: sh update_monaca.sh 
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: setup dotenv
+          command: sh createenvfile.sh  
+      # try build
+      - run: 
+          name: Build Project
+          command: monaca transpile
+      - run:
+          name: Copy transpiled file to Github Pages
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              mkdir -p ~/artifacts
-              ./scripts/nightly.sh $CIRCLE_BUILD_NUM $CIRCLE_SHA1 ~/artifacts
-            fi
-      - store_artifacts:
-          path: ~/artifacts
+            git config --global user.email $GH_EMAIL
+            git config --global user.name $GH_NAME
+            git clone $CIRCLE_REPOSITORY_URL out
+            cd out/plankApp
+            cp -rf ../../www/* .
+            git add -A
+            git commit -m "Automated deployment to GitHub Pages" --allow-empty
+            git push
+            
