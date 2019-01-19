@@ -9,8 +9,13 @@
   <title>Plank timer | Yoseob Kim</title>
   <meta property="og:title" content="Plank timer | Yoseob Kim" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="/favicon/apple-icon-180x180.png" />
-
+  <script>
+    var link = document.createElement('meta');
+    link.name = "og:image";
+    link.content = window.location.pathname + "favicon/apple-icon-180x180.png";
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+   
   <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
   <link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
@@ -24,8 +29,19 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-  <meta name="msapplication-TileColor" content="#ffffff">
-  <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
+  <script>
+    var favicons = document.getElementsByTagName('link');
+    var pathname = window.location.pathname;
+    if(pathname.endsWith('/')) {
+      pathname = pathname.substr(0, pathname.length - 1);
+    }
+
+    for(var i = 0; i < favicons.length; i++) {
+      var favicon = favicons[i];
+      var href = favicon.href;
+      favicon.href = pathname + href;
+    }
+  </script>
   <meta name="theme-color" content="#ffffff">
 
   <!-- The following EJS lines include the necessary CSS and JS
