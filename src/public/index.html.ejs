@@ -39,7 +39,7 @@
     for(var i = 0; i < favicons.length; i++) {
       var favicon = favicons[i];
       var href = new URL(favicon.href);
-      console.log(href);
+      favicon.href = href.origin + pathname + href.pathname;
     }
   </script>
   <meta name="theme-color" content="#ffffff">
