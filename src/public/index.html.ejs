@@ -12,7 +12,7 @@
   <script>
     var link = document.createElement('meta');
     link.name = "og:image";
-    link.content = window.location.pathname + "favicon/apple-icon-180x180.png";
+    link.content = window.location.href + "favicon/apple-icon-180x180.png";
     document.getElementsByTagName('head')[0].appendChild(link);
   </script>
    
@@ -38,8 +38,8 @@
 
     for(var i = 0; i < favicons.length; i++) {
       var favicon = favicons[i];
-      var href = favicon.href;
-      favicon.href = pathname + href;
+      var href = new URL(favicon.href);
+      console.log(href);
     }
   </script>
   <meta name="theme-color" content="#ffffff">
